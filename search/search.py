@@ -89,13 +89,69 @@ def depthFirstSearch(problem):
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  #util.raiseNotDefined()
+  print "Start:", problem.getStartState()
+  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+  print "Start's successors:", problem.getSuccessors(problem.getStartState())
+
+  explored = []
+  fringe = []
+  #append (start state, no direction ('') since root node,path cose zero (since root))
+  fringe.append((problem.getStartState(),'',0))   
+  return recursiveDepthFirstSearch(problem, fringe, explored)
+
+def recursiveDepthFirstSearch(problem,fringe,explored):
+    #load a state from fringe in node and add value to explored list
+    node = fringe.pop()
+    explored.append(node[0])
+    #if state is goal state return
+    if problem.isGoalState(node[0]):
+        return []
+    #if state has successors reverse the list and search through them
+    successors = problem.getSuccessors(node[0])
+    #successors reversed goes left first and gets higher scores 
+    if successors:
+        successors.reverse()
+    for i in successors:
+        #if successor state has not been explored put on top of fringe stack to be explored
+        if i[0] not in explored:
+            fringe.append(i)
+            path = recursiveDepthFirstSearch(problem, fringe, explored)
+            #if path is not an empty object, goalstate has not been reached add to path
+            if (path!= None):
+                path.insert(0,i[1])
+                return path
+
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
-      
+  fringe = []
+  explored = []
+  path = []
+  #init root with extra list param to hold path list
+  node = ((problem.getStartState(),'',0),[])
+  fringe.append(node)
+
+  while (not (problem.isGoalState(node[0][0]))):
+      successors = problem.getSuccessors(node[0][0])
+      for i in successors:
+          if i[0] not in explored:
+            #[0][:] means [node zero][start to stop of contents]
+              path = node[1][:]
+              #add next successor to path
+              path.append(i[1])
+              #add next state and path to fringe
+              fringe.append(((i), path))              
+      explored.append(node[0][0])
+      fringe.remove(node)
+      #if fringe is empty goal has been reached
+      if len(fringe) == 0:
+        break
+      node = fringe[0]
+     
+  return node[1]
+   
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
